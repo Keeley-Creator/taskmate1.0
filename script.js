@@ -207,7 +207,7 @@ const defaultGuideState = {
 };
 
 const state = {
-  lang: localStorage.getItem("taskmate-lang") || "zh",
+  lang: localStorage.getItem("taskmate-lang") || "en",
   mode: "login",
   session: null,
   dashboard: null,
@@ -548,6 +548,7 @@ function applyLanguage() {
   els.langEnBtn.classList.toggle("active", state.lang === "en");
   els.taskTitleInput.placeholder = state.lang === "zh" ? "例如：整理英语错题" : "For example: revise English mistakes";
   els.taskDateInput.title = state.lang === "zh" ? "计划日期" : "Planned date";
+  els.taskDateInput.placeholder = "YYYY-MM-DD";
   els.authUsername.placeholder = state.lang === "zh" ? "输入用户名" : "Enter username";
   els.authDisplayName.placeholder = state.lang === "zh" ? "输入显示名" : "Enter display name";
   els.authPassword.placeholder = state.lang === "zh" ? "输入密码" : "Enter password";

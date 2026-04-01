@@ -23,14 +23,62 @@ html {
 }
 
 body {
+  position: relative;
   margin: 0;
   min-height: 100vh;
   color: var(--ink);
   font-family: "Noto Sans SC", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(157, 210, 124, 0.24), transparent 20%),
-    radial-gradient(circle at bottom right, rgba(47, 107, 61, 0.16), transparent 26%),
-    linear-gradient(180deg, #f7fcf3 0%, var(--bg) 100%);
+    radial-gradient(circle at 10% 12%, rgba(205, 234, 174, 0.55), transparent 22%),
+    radial-gradient(circle at 88% 18%, rgba(148, 196, 118, 0.24), transparent 20%),
+    radial-gradient(circle at 82% 88%, rgba(47, 107, 61, 0.15), transparent 28%),
+    linear-gradient(180deg, #f8fcf4 0%, #edf6e7 45%, #e3efdd 100%);
+  overflow-x: hidden;
+  isolation: isolate;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+body::before {
+  z-index: -2;
+  opacity: 0.85;
+  background:
+    radial-gradient(circle at 12% 76%, rgba(255, 255, 255, 0.36) 0 7%, transparent 8%),
+    radial-gradient(circle at 20% 72%, rgba(255, 255, 255, 0.28) 0 5%, transparent 6%),
+    radial-gradient(circle at 76% 70%, rgba(255, 255, 255, 0.28) 0 6%, transparent 7%),
+    radial-gradient(circle at 84% 74%, rgba(255, 255, 255, 0.22) 0 5%, transparent 6%),
+    linear-gradient(180deg, transparent 0 62%, rgba(75, 122, 73, 0.08) 62% 100%),
+    linear-gradient(115deg, transparent 0 16%, rgba(84, 130, 79, 0.1) 16% 18%, transparent 18% 100%),
+    linear-gradient(70deg, transparent 0 82%, rgba(72, 120, 76, 0.1) 82% 84%, transparent 84% 100%),
+    repeating-linear-gradient(
+      100deg,
+      rgba(53, 93, 53, 0.05) 0 2px,
+      transparent 2px 18px,
+      rgba(53, 93, 53, 0.035) 18px 19px,
+      transparent 19px 34px
+    );
+}
+
+body::after {
+  z-index: -1;
+  opacity: 0.95;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.36) 0 10%, transparent 11%),
+    radial-gradient(circle at 88% 14%, rgba(255, 255, 255, 0.26) 0 8%, transparent 9%),
+    linear-gradient(180deg, transparent 0 70%, rgba(33, 71, 43, 0.12) 70% 100%),
+    radial-gradient(ellipse at 8% 110%, rgba(58, 108, 54, 0.34) 0 26%, transparent 27%),
+    radial-gradient(ellipse at 22% 111%, rgba(72, 126, 64, 0.32) 0 24%, transparent 25%),
+    radial-gradient(ellipse at 38% 112%, rgba(53, 99, 53, 0.28) 0 23%, transparent 24%),
+    radial-gradient(ellipse at 54% 110%, rgba(76, 130, 70, 0.3) 0 26%, transparent 27%),
+    radial-gradient(ellipse at 70% 112%, rgba(57, 104, 57, 0.28) 0 24%, transparent 25%),
+    radial-gradient(ellipse at 86% 110%, rgba(70, 122, 65, 0.32) 0 25%, transparent 26%),
+    linear-gradient(180deg, transparent 0 77%, rgba(36, 76, 45, 0.08) 77% 79%, transparent 79% 100%);
 }
 
 button,
@@ -42,25 +90,26 @@ select {
 .forest-orb {
   position: fixed;
   border-radius: 999px;
-  filter: blur(20px);
+  filter: blur(24px);
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.5;
+  z-index: -1;
 }
 
 .orb-a {
-  width: 320px;
-  height: 320px;
-  left: -80px;
-  top: -60px;
-  background: rgba(157, 210, 124, 0.35);
+  width: 420px;
+  height: 420px;
+  left: -120px;
+  top: -90px;
+  background: radial-gradient(circle at 40% 40%, rgba(218, 240, 190, 0.72), rgba(157, 210, 124, 0.16));
 }
 
 .orb-b {
-  width: 280px;
-  height: 280px;
-  right: -60px;
-  bottom: -80px;
-  background: rgba(47, 107, 61, 0.16);
+  width: 340px;
+  height: 340px;
+  right: -90px;
+  bottom: -110px;
+  background: radial-gradient(circle at 50% 50%, rgba(120, 166, 102, 0.34), rgba(47, 107, 61, 0.08));
 }
 
 .floating-nav {
@@ -105,6 +154,8 @@ select {
 }
 
 .page-shell {
+  position: relative;
+  z-index: 1;
   width: min(1320px, calc(100% - 220px));
   margin-left: 190px;
   padding: 28px 28px 56px;

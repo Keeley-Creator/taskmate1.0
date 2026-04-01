@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
@@ -43,8 +43,8 @@
 
       <div class="topbar-actions">
         <div class="language-switch">
-          <button id="langZhBtn" class="lang-btn active">中</button>
-          <button id="langEnBtn" class="lang-btn">EN</button>
+          <button id="langZhBtn" class="lang-btn">中</button>
+          <button id="langEnBtn" class="lang-btn active">EN</button>
         </div>
         <div class="account-box">
           <div id="accountSummary" class="account-summary">
@@ -116,7 +116,7 @@
           </label>
           <label>
             <span data-i18n="library.date">计划日期</span>
-            <input id="taskDateInput" type="date" />
+            <input id="taskDateInput" type="text" inputmode="numeric" placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}" />
           </label>
           <label class="checkbox-label">
             <input id="taskSingleInput" type="checkbox" checked />
