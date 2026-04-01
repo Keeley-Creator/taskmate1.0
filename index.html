@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taskmate Forest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Outfit:wght@500;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="forest-orb orb-a"></div>
+  <div class="forest-orb orb-b"></div>
+
+  <aside class="floating-nav">
+    <div class="nav-brand">Taskmate</div>
+    <button class="nav-link active" data-target="todaySection" data-i18n="nav.today">今日必做</button>
+    <button class="nav-link" data-target="librarySection" data-i18n="nav.library">任务库</button>
+    <button class="nav-link" data-target="mateSection" data-i18n="nav.mate">Taskmate</button>
+  </aside>
+
+  <div class="page-shell">
+      <header class="topbar">
+        <div class="topbar-copy">
+          <p class="eyebrow" data-i18n="hero.eyebrow">Forest Productivity Space</p>
+          <h1 data-i18n="hero.title">有 AI 学习搭子的森林系计划站</h1>
+          <p class="hero-text" data-i18n="hero.subtitle">
+            管理任务库、挑选今日必做、记录完成节奏，并让 Taskmate 每天像学习搭子一样提醒和鼓励你。
+          </p>
+          <div id="runtimeBanner" class="runtime-banner hidden"></div>
+        </div>
+
+      <div class="topbar-actions">
+        <div class="language-switch">
+          <button id="langZhBtn" class="lang-btn active">中</button>
+          <button id="langEnBtn" class="lang-btn">EN</button>
+        </div>
+        <div class="account-box">
+          <div id="accountSummary" class="account-summary">
+            <strong data-i18n="account.guest">游客模式</strong>
+            <span data-i18n="account.guestHint">登录后可保存任务与 AI 设定</span>
+          </div>
+          <div class="account-buttons">
+            <button id="openAuthBtn" class="primary-btn" data-i18n="account.login">登录 / 注册</button>
+            <button id="logoutBtn" class="secondary-btn hidden" data-i18n="account.logout">退出登录</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <section id="todaySection" class="panel hero-panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">01</p>
+            <h2 data-i18n="today.title">今日必做任务</h2>
+          </div>
+          <div class="section-actions">
+            <button id="openTaskPickerBtn" class="primary-btn" data-i18n="today.addFromLibrary">从任务库添加</button>
+            <button id="quickTodayBtn" class="secondary-btn" data-i18n="today.quickAdd">快速新增</button>
+          </div>
+        </div>
+
+        <div class="today-layout">
+          <div class="today-column">
+            <div id="migrationBanner" class="migration-banner hidden"></div>
+            <div id="yesterdaySummary" class="summary-card"></div>
+            <div id="todayBoard" class="today-board"></div>
+          </div>
+
+          <aside class="stats-card">
+            <div class="pie-wrap">
+              <div id="progressPie" class="progress-pie"><span id="progressText">0%</span></div>
+            </div>
+            <div class="stats-copy">
+              <h3 data-i18n="today.progressTitle">今日完成度</h3>
+              <p id="todayStatsText"></p>
+            </div>
+            <div id="matePraise" class="mate-praise"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="librarySection" class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">02</p>
+            <h2 data-i18n="library.title">任务库</h2>
+          </div>
+        </div>
+
+        <form id="libraryForm" class="library-form">
+          <label>
+            <span data-i18n="library.taskName">任务名称</span>
+            <input id="taskTitleInput" type="text" maxlength="100" />
+          </label>
+          <label>
+            <span data-i18n="library.category">任务类别</span>
+            <div class="category-combo">
+              <select id="taskCategorySelect"></select>
+              <input id="customCategoryInput" type="text" maxlength="30" />
+            </div>
+          </label>
+          <label>
+            <span data-i18n="library.date">计划日期</span>
+            <input id="taskDateInput" type="date" />
+          </label>
+          <label class="checkbox-label">
+            <input id="taskSingleInput" type="checkbox" checked />
+            <span data-i18n="library.single">单次任务</span>
+          </label>
+          <button class="primary-btn" type="submit" data-i18n="library.add">加入任务库</button>
+        </form>
+
+        <div id="libraryBoard" class="library-board"></div>
+      </section>
+
+      <section id="mateSection" class="panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">03</p>
+            <h2 data-i18n="mate.title">Taskmate AI 搭子</h2>
+          </div>
+          <button id="openMateSettingsBtn" class="primary-btn" data-i18n="mate.openSettings">设定 AI mate</button>
+        </div>
+
+        <div class="mate-layout">
+          <div class="mate-preview-card">
+            <div id="mateAvatar" class="mate-avatar">
+              <div class="avatar-hair"></div>
+              <div class="avatar-face"></div>
+              <div class="avatar-outfit"></div>
+            </div>
+            <div class="mate-preview-copy">
+              <p class="eyebrow" data-i18n="mate.preview">Your Mate</p>
+              <h3 id="mateName">Taskmate</h3>
+              <p id="mateSummary"></p>
+            </div>
+          </div>
+
+          <div class="mate-message-card">
+            <h3 data-i18n="mate.dailyPromptTitle">今日搭子提醒</h3>
+            <p id="dailyMatePrompt"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="authModal" class="modal hidden">
+    <div class="modal-card auth-card">
+      <button class="modal-close" data-close="authModal">×</button>
+      <div class="modal-tabs">
+        <button id="loginTabBtn" class="tab-btn active" data-i18n="auth.loginTab">登录</button>
+        <button id="registerTabBtn" class="tab-btn" data-i18n="auth.registerTab">注册</button>
+      </div>
+      <form id="authForm" class="modal-form">
+        <label>
+          <span data-i18n="auth.username">用户名</span>
+          <input id="authUsername" type="text" maxlength="40" required />
+        </label>
+        <label id="displayNameWrap" class="hidden">
+          <span data-i18n="auth.displayName">显示名</span>
+          <input id="authDisplayName" type="text" maxlength="40" />
+        </label>
+        <label>
+          <span data-i18n="auth.password">密码</span>
+          <input id="authPassword" type="password" maxlength="40" required />
+        </label>
+        <button id="authSubmitBtn" class="primary-btn" type="submit" data-i18n="auth.loginAction">登录并进入</button>
+        <p id="authMessage" class="status-text"></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="mateModal" class="modal hidden">
+    <div class="modal-card">
+      <button class="modal-close" data-close="mateModal">×</button>
+      <h3 data-i18n="mate.settingsTitle">设定你的 AI 学习搭子</h3>
+      <form id="mateForm" class="modal-form">
+        <label>
+          <span data-i18n="mate.gender">AI 性别</span>
+          <select id="mateGender"></select>
+        </label>
+        <label>
+          <span data-i18n="mate.personality">AI 性格</span>
+          <select id="matePersonality"></select>
+        </label>
+        <label>
+          <span data-i18n="mate.nick">AI 昵称</span>
+          <input id="mateNickname" type="text" maxlength="30" />
+        </label>
+        <label>
+          <span data-i18n="mate.callUser">AI 对你的称呼</span>
+          <input id="mateUserCall" type="text" maxlength="30" />
+        </label>
+        <div class="form-grid">
+          <label>
+            <span data-i18n="mate.hair">发型</span>
+            <select id="mateHair"></select>
+          </label>
+          <label>
+            <span data-i18n="mate.face">面部</span>
+            <select id="mateFace"></select>
+          </label>
+          <label>
+            <span data-i18n="mate.outfit">服装</span>
+            <select id="mateOutfit"></select>
+          </label>
+        </div>
+        <div class="section-actions">
+          <button id="randomizeMateBtn" class="secondary-btn" type="button" data-i18n="mate.random">随机拼装</button>
+          <button class="primary-btn" type="submit" data-i18n="mate.save">保存设定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="pickerModal" class="modal hidden">
+    <div class="modal-card">
+      <button class="modal-close" data-close="pickerModal">×</button>
+      <h3 data-i18n="today.pickerTitle">从任务库选择加入今日任务</h3>
+      <div id="pickerList" class="picker-list"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="./script.js"></script>
+</body>
+
+</html>
