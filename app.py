@@ -109,6 +109,15 @@ def parse_json(handler):
 
 
 class AppHandler(BaseHTTPRequestHandler):
+    def do_HEAD(self):
+        parsed = urlparse(self.path)
+        if parsed.path == "/":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+        else:
+            self.send_response(404)
+            self.end_headers()
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path == "/":
@@ -554,12 +563,18 @@ def serialize_ai(row):
     }
 
 
+import os
+
 def run():
     init_db()
-    server = ThreadingHTTPServer(("127.0.0.1", 8000), AppHandler)
-    print("Taskmate running at http://127.0.0.1:8000")
-    server.serve_forever()
 
+    port = int(os.environ.get("PORT", 8000))
+
+    server = ThreadingHTTPServer(("0.0.0.0", port), AppHandler)
+
+    print(f"Taskmate running on port {port}")
+
+    server.serve_forever()
 
 if __name__ == "__main__":
     run()
