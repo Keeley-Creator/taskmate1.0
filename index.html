@@ -28,7 +28,13 @@
       <header class="topbar">
         <div class="topbar-copy">
           <p class="eyebrow" data-i18n="hero.eyebrow">Forest Productivity Space</p>
-          <h1 data-i18n="hero.title">有 AI 学习搭子的森林系计划站</h1>
+          <div class="hero-title-row">
+            <h1 data-i18n="hero.title">有 AI 学习搭子的森林系计划站</h1>
+            <div id="titleMateSprite" class="title-mate-sprite">
+              <div class="title-pet-shell"></div>
+              <div class="title-pet-core">🥚</div>
+            </div>
+          </div>
           <p class="hero-text" data-i18n="hero.subtitle">
             管理任务库、挑选今日必做、记录完成节奏，并让 Taskmate 每天像学习搭子一样提醒和鼓励你。
           </p>
@@ -142,7 +148,7 @@
             <div class="mate-preview-copy">
               <p class="eyebrow" data-i18n="mate.preview">Your Mate</p>
               <h3 id="mateName">Taskmate</h3>
-              <p id="mateStage"></p>
+              <div id="mateStage"></div>
               <p id="mateSummary"></p>
             </div>
           </div>
@@ -150,6 +156,9 @@
           <div class="mate-message-card">
             <h3 data-i18n="mate.dailyPromptTitle">今日搭子提醒</h3>
             <p id="dailyMatePrompt"></p>
+          </div>
+
+          <div class="feed-card">
             <div id="feedPanel" class="feed-panel"></div>
           </div>
         </div>
@@ -194,16 +203,6 @@
           <select id="mateSpecies" class="hidden"></select>
         </label>
         <label>
-          <span data-i18n="mate.gender">AI 性别</span>
-          <div id="mateGenderGroup" class="option-chip-grid"></div>
-          <select id="mateGender" class="hidden"></select>
-        </label>
-        <label>
-          <span data-i18n="mate.personality">AI 性格</span>
-          <div id="matePersonalityGroup" class="option-chip-grid"></div>
-          <select id="matePersonality" class="hidden"></select>
-        </label>
-        <label>
           <span data-i18n="mate.nick">AI 昵称</span>
           <input id="mateNickname" type="text" maxlength="30" />
         </label>
@@ -211,27 +210,16 @@
           <span data-i18n="mate.callUser">AI 对你的称呼</span>
           <input id="mateUserCall" type="text" maxlength="30" />
         </label>
-        <div class="form-grid">
-          <label>
-            <span data-i18n="mate.hair">发型</span>
-            <div id="mateHairGroup" class="option-chip-grid"></div>
-            <select id="mateHair" class="hidden"></select>
-          </label>
-          <label>
-            <span data-i18n="mate.face">面部</span>
-            <div id="mateFaceGroup" class="option-chip-grid"></div>
-            <select id="mateFace" class="hidden"></select>
-          </label>
-          <label>
-            <span data-i18n="mate.outfit">服装</span>
-            <div id="mateOutfitGroup" class="option-chip-grid"></div>
-            <select id="mateOutfit" class="hidden"></select>
-          </label>
-        </div>
+        <p class="blindbox-note" data-i18n="mate.blindboxHint">盲盒会随机生成手绘可爱二次元风格的外观和成长路线。</p>
         <div class="section-actions">
-          <button id="randomizeMateBtn" class="secondary-btn" type="button" data-i18n="mate.random">随机拼装</button>
+          <button id="randomizeMateBtn" class="secondary-btn" type="button" data-i18n="mate.random">打开盲盒</button>
           <button class="primary-btn" type="submit" data-i18n="mate.save">保存设定</button>
         </div>
+        <select id="mateGender" class="hidden"></select>
+        <select id="matePersonality" class="hidden"></select>
+        <select id="mateHair" class="hidden"></select>
+        <select id="mateFace" class="hidden"></select>
+        <select id="mateOutfit" class="hidden"></select>
       </form>
     </div>
   </div>

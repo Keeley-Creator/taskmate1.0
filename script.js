@@ -43,7 +43,8 @@ const translations = {
     "mate.hair": "发型",
     "mate.face": "面部",
     "mate.outfit": "服装",
-    "mate.random": "随机拼装",
+    "mate.random": "打开盲盒",
+    "mate.blindboxHint": "盲盒会随机生成手绘可爱二次元风格的外观和成长路线。",
     "mate.save": "保存设定",
   },
   en: {
@@ -88,7 +89,8 @@ const translations = {
     "mate.hair": "Hair",
     "mate.face": "Face",
     "mate.outfit": "Outfit",
-    "mate.random": "Randomize",
+    "mate.random": "Open blind box",
+    "mate.blindboxHint": "The blind box randomly generates a cute hand-drawn anime look and growth route.",
     "mate.save": "Save settings",
   },
 };
@@ -186,11 +188,14 @@ const speciesEmojiStages = {
 const defaultPetState = {
   species: "dog",
   growthPoints: 0,
-  spentCredits: 0,
+  feedCredits: 0,
   feedCounts: { cotton: 0, durian: 0, energy: 0, syringe: 0 },
   lastFedDate: "",
   lastNeglectCheck: "",
   lastComplaint: "",
+  lastRewardDate: "",
+  currentPattern: "",
+  hatched: false,
   setupDone: false,
 };
 
@@ -198,6 +203,7 @@ const defaultGuideState = {
   taskmateSetup: false,
   firstTaskAdded: false,
   firstTaskCompleted: false,
+  dismissed: false,
 };
 
 const state = {
@@ -270,6 +276,7 @@ const els = {
   mateOutfitGroup: document.querySelector("#mateOutfitGroup"),
   randomizeMateBtn: document.querySelector("#randomizeMateBtn"),
   mateAvatar: document.querySelector("#mateAvatar"),
+  titleMateSprite: document.querySelector("#titleMateSprite"),
   petCore: document.querySelector("#petCore"),
   petPattern: document.querySelector("#petPattern"),
   petSpeciesBadge: document.querySelector("#petSpeciesBadge"),
@@ -431,6 +438,9 @@ function renderChipGroups() {
     [els.mateFaceGroup, els.mateFace, presets().face],
     [els.mateOutfitGroup, els.mateOutfit, presets().outfit],
   ].forEach(([container, select, items]) => {
+    if (!container) {
+      return;
+    }
     renderSelectableChips({
       container,
       select,
@@ -443,6 +453,9 @@ function renderChipGroups() {
 }
 
 function renderSelectableChips({ container, select, items, selected, onSelect }) {
+  if (!container || !select) {
+    return;
+  }
   container.innerHTML = items
     .map(
       (item) => `
@@ -646,8 +659,8 @@ function renderDashboard() {
   renderTodayBoard(todayTasks);
   renderLibraryBoard(libraryTasks);
   renderTaskPicker(libraryTasks);
-  renderMatePreview(normalizeProfileForLanguage(ai));
   updateStats(todayTasks);
+  renderMatePreview(normalizeProfileForLanguage(ai));
 }
 
 function updateGuideProgress() {
@@ -671,10 +684,14 @@ function renderOnboardingCard() {
   }
 
   const guide = getGuideState();
+  if (guide.dismissed) {
+    els.onboardingCard.classList.add("hidden");
+    return;
+  }
   const steps = [
     {
       done: guide.taskmateSetup,
-      title: state.lang === "zh" ? "先设置你的 Taskmate 蛋与性格" : "Set up your Taskmate egg and mood",
+      title: state.lang === "zh" ? "先设置你的 Taskmate" : "Set up your Taskmate",
     },
     {
       done: guide.firstTaskAdded,
@@ -693,21 +710,32 @@ function renderOnboardingCard() {
   }
 
   els.onboardingCard.innerHTML = `
-    <strong>${state.lang === "zh" ? "注册后引导" : "Starter guide"}</strong>
-    <p>${state.lang === "zh" ? "按这个顺序完成，会更快进入完整体验。" : "Follow these steps to unlock the full flow faster."}</p>
+    <strong>${state.lang === "zh" ? "使用方式" : "How to use"}</strong>
+    <p>${state.lang === "zh" ? "照着这三个步骤试一次，就能快速熟悉 Taskmate。" : "Follow these three steps once to get familiar with Taskmate."}</p>
     <div class="onboarding-list">
       ${steps
         .map(
           (step, index) => `
           <div class="onboarding-step ${step.done ? "done" : ""}">
-            <div class="step-dot">${step.done ? "✓" : index + 1}</div>
+            <div class="step-dot">${index + 1}</div>
             <div>${step.title}</div>
           </div>
         `
         )
         .join("")}
     </div>
+    <div class="section-actions">
+      <button id="dismissGuideBtn" class="secondary-btn" type="button">${state.lang === "zh" ? "我知道啦" : "Got it"}</button>
+    </div>
   `;
+  document.querySelector("#dismissGuideBtn").addEventListener("click", dismissGuideCard);
+}
+
+function dismissGuideCard() {
+  const guide = getGuideState();
+  guide.dismissed = true;
+  saveGuideState(guide);
+  els.onboardingCard.classList.add("hidden");
 }
 
 function renderYesterdaySummary(summary) {
@@ -952,42 +980,45 @@ function renderMatePreview(ai) {
   const species = presets().species.find((item) => item.value === pet.species) || presets().species[0];
   const currentMood = getDominantMood(pet, profile.personality);
   const currentEmoji = speciesEmojiStages[pet.species]?.[stage] || "🥚";
+  const stagePrefix = state.lang === "zh" ? "当前阶段" : "Current stage";
 
   els.mateName.textContent = profile.mate_name || "Taskmate";
-  els.mateStage.textContent =
-    state.lang === "zh"
-      ? `当前阶段：${getStageLabel(stage)} · 当前气质：${currentMood}`
-      : `Current stage: ${getStageLabel(stage)} · Current mood: ${currentMood}`;
+  els.mateStage.innerHTML = `<div class="mate-stage-badge"><span>${stagePrefix}</span><strong>${getStageLabel(stage)}</strong></div>`;
   els.mateSummary.textContent =
     state.lang === "zh"
-      ? `${profile.mate_name} 会叫你“${profile.user_nickname}”，蛋的原型是 ${species.label}，目前偏${currentMood}，外观搭配 ${profile.hair_style}、${profile.face_style} 和 ${profile.outfit_style}。`
-      : `${profile.mate_name} calls you "${profile.user_nickname}". The egg belongs to a ${species.label.toLowerCase()} line, feels more ${currentMood}, and presents ${profile.hair_style.toLowerCase()}, ${profile.face_style.toLowerCase()}, and ${profile.outfit_style.toLowerCase()}.`;
+      ? createMateSummaryText(profile, species, pet, currentMood)
+      : createMateSummaryText(profile, species, pet, currentMood);
   els.dailyMatePrompt.textContent = createDailyMatePrompt(profile, pet, currentMood);
   els.petCore.textContent = currentEmoji;
   els.petSpeciesBadge.textContent = `${species.emoji} ${species.label}`;
   els.petPattern.classList.toggle("hidden", pet.growthPoints < 3);
+  els.petPattern.dataset.pattern = pet.currentPattern || getPatternType(pet);
   els.petAccessory.classList.toggle("hidden", pet.growthPoints < 365);
   els.petAccessory.textContent = pet.growthPoints >= 365 ? "🎀" : "✨";
   els.mateAvatar.dataset.stage = stage;
+  if (els.titleMateSprite) {
+    els.titleMateSprite.querySelector(".title-pet-core").textContent = currentEmoji;
+  }
   syncMateForm(profile, pet);
   renderFeedPanel(profile, pet);
 }
 
 function renderFeedPanel(profile, pet) {
-  const completedCount = state.dashboard ? state.dashboard.library_tasks.filter((task) => task.completed).length : 0;
-  const availableFeeds = Math.max(completedCount - pet.spentCredits, 0);
+  const availableFeeds = pet.feedCredits || 0;
   const foods = presets().foods;
   const complaint = pet.lastComplaint;
+  const stage = getPetStage(pet.growthPoints);
 
   els.feedPanel.innerHTML = `
-    <strong>${state.lang === "zh" ? "喂养你的蛋" : "Feed your egg"}</strong>
+    <strong>${state.lang === "zh" ? "喂养你的 Taskmate" : "Feed your Taskmate"}</strong>
     <p>
       ${
         state.lang === "zh"
-          ? `你目前还有 ${availableFeeds} 次可用喂养机会。完成任务后可以选择不同养料，让 Taskmate 的性格和成长发生变化。`
-          : `You currently have ${availableFeeds} feeding chance(s). Complete tasks, then choose food to change Taskmate's growth and mood.`
+          ? `你目前有 ${availableFeeds} 份养料。只有在你完成今天全部任务时，才会获得 1 份新养料。`
+          : `You currently have ${availableFeeds} food point(s). You earn 1 new food point only after finishing all of today's tasks.`
       }
     </p>
+    <div class="feed-progress-chip">${state.lang === "zh" ? `累计养料 ${pet.growthPoints}` : `Total food ${pet.growthPoints}`}</div>
     ${complaint ? `<p>${complaint}</p>` : ""}
     <div class="feed-actions">
       ${Object.entries(foods)
@@ -1001,10 +1032,22 @@ function renderFeedPanel(profile, pet) {
         )
         .join("")}
     </div>
+    ${
+      stage === "legend"
+        ? `<div class="feed-management">
+            <button type="button" class="secondary-btn" id="newEggBtn">${state.lang === "zh" ? "养一个新的蛋" : "Raise a new egg"}</button>
+            <button type="button" class="secondary-btn" id="keepEggBtn">${state.lang === "zh" ? "继续养这个蛋" : "Keep this egg"}</button>
+          </div>`
+        : ""
+    }
   `;
 
   els.feedPanel.querySelectorAll("[data-feed-type]").forEach((button) => {
     button.addEventListener("click", () => feedPet(button.dataset.feedType, profile));
+  });
+  document.querySelector("#newEggBtn")?.addEventListener("click", resetToNewEgg);
+  document.querySelector("#keepEggBtn")?.addEventListener("click", () => {
+    showToast(state.lang === "zh" ? "这个孩子会继续陪你长大。" : "This little one will keep growing with you.");
   });
 }
 
@@ -1016,6 +1059,14 @@ function getPetStage(points) {
   return "egg";
 }
 
+function getPatternType(pet) {
+  if (pet.currentPattern) {
+    return pet.currentPattern;
+  }
+  const top = Object.entries(pet.feedCounts || {}).sort((a, b) => b[1] - a[1])[0];
+  return top?.[1] ? top[0] : "cotton";
+}
+
 function getStageLabel(stage) {
   const labels = {
     zh: {
@@ -1023,7 +1074,7 @@ function getStageLabel(stage) {
       juvenile: "幼年体",
       young: "青年体",
       adult: "成熟体",
-      legend: "饰品觉醒体",
+      legend: "配饰觉醒体",
     },
     en: {
       egg: "Egg",
@@ -1037,6 +1088,9 @@ function getStageLabel(stage) {
 }
 
 function getDominantMood(pet, fallback) {
+  if (pet.growthPoints < 30) {
+    return state.lang === "zh" ? "还没有明显性格" : "no clear personality yet";
+  }
   const entries = Object.entries(pet.feedCounts || {});
   const top = entries.sort((a, b) => b[1] - a[1])[0];
   if (!top || top[1] === 0) {
@@ -1048,15 +1102,47 @@ function getDominantMood(pet, fallback) {
 function createDailyMatePrompt(profile, pet, mood) {
   const stats = computeTodayStats(state.dashboard ? state.dashboard.today_tasks : []);
   const stage = getStageLabel(getPetStage(pet.growthPoints));
-  if (state.lang === "zh") {
-    return `${profile.user_nickname}，我是 ${profile.mate_name}。我现在处于${stage}，整体气质更偏${mood}。今天还有 ${stats.pending} 项任务没完成，完成后别忘了回来喂我。`;
+  const shortTalk = createPetSpeech(profile, pet, mood, stats.pending, stage);
+  return shortTalk;
+}
+
+function createPetSpeech(profile, pet, mood, pending, stage) {
+  if (pet.growthPoints < 3) {
+    return state.lang === "zh" ? "蛋……" : "E...gg...";
   }
-  return `${profile.user_nickname}, I'm ${profile.mate_name}. I'm in the ${stage.toLowerCase()} stage and feel more ${mood}. You still have ${stats.pending} task(s) left today, so come back and feed me after you finish one.`;
+  if (pet.growthPoints < 7) {
+    return state.lang === "zh" ? "陪你呀" : "With you.";
+  }
+  if (state.lang === "zh") {
+    return `${profile.user_nickname}，我是 ${profile.mate_name}。我现在是${stage}，今天还有 ${pending} 项任务。${pet.growthPoints >= 30 ? `我现在更偏${mood}，会继续陪着你。` : "我还在慢慢长大。"}`
+  }
+  return `${profile.user_nickname}, I'm ${profile.mate_name}. I'm in the ${stage.toLowerCase()} stage and you still have ${pending} task(s) today. ${pet.growthPoints >= 30 ? `I feel more ${mood} now.` : "I'm still growing."}`;
+}
+
+function createMateSummaryText(profile, species, pet, mood) {
+  const stage = getPetStage(pet.growthPoints);
+  if (state.lang === "zh") {
+    if (pet.growthPoints < 3) {
+      return `${profile.mate_name} 现在还是一颗纯白的 ${species.label} 蛋，只会发出很短的小声音。`;
+    }
+    if (pet.growthPoints < 7) {
+      return `${profile.mate_name} 已经长出 ${species.label} 系的小花纹，会用很短的词回应你，但还没有稳定性格。`;
+    }
+    return `${profile.mate_name} 会叫你“${profile.user_nickname}”，现在是 ${species.label} 原型的${getStageLabel(stage)}。${pet.growthPoints >= 30 ? `它的性格已经慢慢偏向${mood}。` : "它还没有固定性格，正在继续长大。"}`
+  }
+  if (pet.growthPoints < 3) {
+    return `${profile.mate_name} is still a plain white ${species.label.toLowerCase()} egg and only makes tiny unfinished sounds.`;
+  }
+  if (pet.growthPoints < 7) {
+    return `${profile.mate_name} has grown small ${species.label.toLowerCase()} patterns and can only respond with a word or two.`;
+  }
+  return `${profile.mate_name} calls you "${profile.user_nickname}" and is now in the ${getStageLabel(stage).toLowerCase()} form of a ${species.label.toLowerCase()} line. ${pet.growthPoints >= 30 ? `Its personality now leans ${mood}.` : "Its personality is still forming."}`;
 }
 
 function updateStats(todayTasks) {
   const stats = computeTodayStats(todayTasks);
   updatePie(stats.completed, stats.total);
+  maybeRewardDailyFeed(stats);
   els.todayStatsText.textContent =
     state.lang === "zh"
       ? `已完成 ${stats.completed} 项，未完成 ${stats.pending} 项。`
@@ -1065,6 +1151,21 @@ function updateStats(todayTasks) {
     state.lang === "zh"
       ? "双击完成任务后，Taskmate 会马上夸奖你，并提醒剩余任务与今天剩余时间。"
       : "Double-click a task to complete it. Taskmate will praise you and show the remaining tasks and time.";
+}
+
+function maybeRewardDailyFeed(stats) {
+  if (!state.session || !stats.total || stats.pending !== 0) {
+    return;
+  }
+  const pet = getPetState();
+  const today = todayKey();
+  if (pet.lastRewardDate === today) {
+    return;
+  }
+  pet.feedCredits += 1;
+  pet.lastRewardDate = today;
+  savePetState(pet);
+  showToast(state.lang === "zh" ? "今日任务已全部完成，获得 1 份养料。" : "All tasks for today are done. You earned 1 food point.");
 }
 
 function computeTodayStats(tasks) {
@@ -1304,10 +1405,14 @@ function randomizeMateForm() {
     els.mateUserCall.value = state.lang === "zh" ? "同学" : "friend";
   }
   renderChipGroups();
+  showToast(state.lang === "zh" ? "盲盒已经摇好了，外观会在保存后揭晓。" : "Blind box shaken. The look will be revealed after saving.");
 }
 
 async function submitMateForm(event) {
   event.preventDefault();
+  if (!els.mateGender.value || !els.matePersonality.value || !els.mateHair.value || !els.mateFace.value || !els.mateOutfit.value) {
+    randomizeMateForm();
+  }
   const payload = {
     gender: els.mateGender.value,
     personality: els.matePersonality.value,
@@ -1403,6 +1508,7 @@ function processPetNeglect() {
 
 function reduceFeedCounts(pet, amount) {
   pet.growthPoints = Math.max(0, pet.growthPoints - amount);
+  pet.feedCredits = Math.max(0, (pet.feedCredits || 0) - amount);
   for (let count = 0; count < amount; count += 1) {
     const biggest = Object.entries(pet.feedCounts).sort((a, b) => b[1] - a[1])[0];
     if (!biggest || biggest[1] <= 0) {
@@ -1425,8 +1531,7 @@ function createComplaintText(missedDays, mood) {
 
 function feedPet(foodKey, profile) {
   const pet = getPetState();
-  const completedCount = state.dashboard ? state.dashboard.library_tasks.filter((task) => task.completed).length : 0;
-  const availableFeeds = Math.max(completedCount - pet.spentCredits, 0);
+  const availableFeeds = pet.feedCredits || 0;
   if (availableFeeds <= 0) {
     showToast(state.lang === "zh" ? "先完成任务，再回来喂蛋吧。" : "Finish a task first, then come back to feed the egg.");
     return;
@@ -1434,10 +1539,13 @@ function feedPet(foodKey, profile) {
 
   pet.feedCounts[foodKey] += 1;
   pet.growthPoints += 1;
-  pet.spentCredits += 1;
+  pet.feedCredits = Math.max(0, pet.feedCredits - 1);
   pet.lastFedDate = todayKey();
   pet.lastNeglectCheck = todayKey();
   pet.lastComplaint = "";
+  if (!pet.currentPattern && pet.growthPoints >= 3) {
+    pet.currentPattern = foodKey;
+  }
   savePetState(pet);
   renderMatePreview(profile);
   showToast(createFeedToast(foodKey, pet));
@@ -1450,6 +1558,18 @@ function createFeedToast(foodKey, pet) {
     return `${food.name} 已喂给蛋。Taskmate 现在更偏${getDominantMood(pet)}，成长阶段来到${stage}。`;
   }
   return `${food.name} was fed to the egg. Taskmate now feels more ${getDominantMood(pet)} and has reached the ${stage.toLowerCase()} stage.`;
+}
+
+function resetToNewEgg() {
+  const pet = getPetState();
+  const nextPet = {
+    ...structuredCloneSafe(defaultPetState),
+    species: pet.species,
+    setupDone: true,
+  };
+  savePetState(nextPet);
+  renderMatePreview(state.dashboard?.ai_profile ? normalizeProfileForLanguage(state.dashboard.ai_profile) : null);
+  showToast(state.lang === "zh" ? "新的蛋已经准备好了。" : "A new egg is ready.");
 }
 
 function randomIndex(max) {
