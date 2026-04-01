@@ -527,53 +527,54 @@ class AppHandler(BaseHTTPRequestHandler):
         return self.send_json({"ok": True})
 
 
-def serialize_user(row):
-    return {
-        "id": row["id"],
-        "username": row["username"],
-        "display_name": row["display_name"],
-        "language": row["language"],
-    }
+    def serialize_user(row):
+        return {
+            "id": row["id"],
+            "username": row["username"],
+            "display_name": row["display_name"],
+            "language": row["language"],
+        }
 
 
-def serialize_task(row):
-    return {
-        "id": row["id"],
-        "title": row["title"],
-        "category": row["category"],
-        "due_date": row["due_date"],
-        "is_one_time": bool(row["is_one_time"]),
-        "in_today": bool(row["in_today"]),
-        "completed": bool(row["completed"]),
-        "completed_at": row["completed_at"],
-    }
+    def serialize_task(row):
+        return {
+            "id": row["id"],
+            "title": row["title"],
+            "category": row["category"],
+            "due_date": row["due_date"],
+            "is_one_time": bool(row["is_one_time"]),
+            "in_today": bool(row["in_today"]),
+            "completed": bool(row["completed"]),
+            "completed_at": row["completed_at"],
+        }
 
 
-def serialize_ai(row):
-    if not row:
-        return None
-    return {
-        "gender": row["gender"],
-        "personality": row["personality"],
-        "mate_name": row["mate_name"],
-        "user_nickname": row["user_nickname"],
-        "hair_style": row["hair_style"],
-        "face_style": row["face_style"],
-        "outfit_style": row["outfit_style"],
-    }
+    def serialize_ai(row):
+        if not row:
+            return None
+        return {
+            "gender": row["gender"],
+            "personality": row["personality"],
+            "mate_name": row["mate_name"],
+            "user_nickname": row["user_nickname"],
+            "hair_style": row["hair_style"],
+            "face_style": row["face_style"],
+            "outfit_style": row["outfit_style"],
+        }
 
 
 import os
 
 def run():
     init_db()
-
+    
+    # 获取 Render 动态分配的端口
     port = int(os.environ.get("PORT", 8000))
 
+    # 绑定 0.0.0.0 和动态端口 (只保留这一段启动代码)
     server = ThreadingHTTPServer(("0.0.0.0", port), AppHandler)
-
+    
     print(f"Taskmate running on port {port}")
-
     server.serve_forever()
 
 if __name__ == "__main__":
