@@ -1,6 +1,6 @@
 :root {
   --bg: #e9f3e4;
-  --panel: rgba(247, 252, 244, 0.88);
+  --panel: rgba(247, 252, 244, 0.9);
   --panel-strong: #f8fdf6;
   --line: rgba(37, 77, 46, 0.12);
   --ink: #193222;
@@ -10,6 +10,7 @@
   --moss: #7fa86b;
   --leaf: #9dd27c;
   --cream: #eef6e8;
+  --gold: #dcb45f;
   --shadow: 0 22px 60px rgba(31, 79, 45, 0.12);
 }
 
@@ -27,8 +28,8 @@ body {
   color: var(--ink);
   font-family: "Noto Sans SC", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(157, 210, 124, 0.2), transparent 20%),
-    radial-gradient(circle at bottom right, rgba(47, 107, 61, 0.12), transparent 26%),
+    radial-gradient(circle at top left, rgba(157, 210, 124, 0.24), transparent 20%),
+    radial-gradient(circle at bottom right, rgba(47, 107, 61, 0.16), transparent 26%),
     linear-gradient(180deg, #f7fcf3 0%, var(--bg) 100%);
 }
 
@@ -149,6 +150,16 @@ select {
   line-height: 1.8;
 }
 
+.runtime-banner,
+.onboarding-card,
+.migration-banner,
+.summary-card,
+.feed-panel,
+.library-empty,
+.drop-hint {
+  line-height: 1.7;
+}
+
 .runtime-banner {
   margin-top: 18px;
   padding: 14px 16px;
@@ -156,7 +167,6 @@ select {
   border: 1px solid rgba(47, 107, 61, 0.16);
   background: rgba(255, 247, 214, 0.7);
   color: var(--forest-deep);
-  line-height: 1.7;
 }
 
 .topbar-actions {
@@ -172,7 +182,8 @@ select {
 .summary-card,
 .stats-card,
 .mate-preview-card,
-.mate-message-card {
+.mate-message-card,
+.onboarding-card {
   border: 1px solid var(--line);
   border-radius: 28px;
   background: var(--panel);
@@ -185,7 +196,9 @@ select {
 .checkbox-label,
 .today-item-meta,
 .task-chip-row,
-.reminder-row {
+.feed-actions,
+.library-row-head,
+.inline-actions {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -201,7 +214,11 @@ select {
 .primary-btn,
 .secondary-btn,
 .pill-btn,
-.picker-btn {
+.picker-btn,
+.icon-btn,
+.feed-btn,
+.task-inline-btn,
+.option-chip {
   border: 0;
   border-radius: 999px;
   cursor: pointer;
@@ -222,7 +239,9 @@ select {
 
 .secondary-btn,
 .pill-btn,
-.picker-btn {
+.picker-btn,
+.icon-btn,
+.task-inline-btn {
   background: rgba(47, 107, 61, 0.1);
   color: var(--forest-deep);
 }
@@ -230,8 +249,17 @@ select {
 .primary-btn,
 .secondary-btn,
 .pill-btn,
-.picker-btn {
+.picker-btn,
+.task-inline-btn {
   padding: 12px 18px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
 }
 
 .account-box {
@@ -251,8 +279,10 @@ select {
 .mate-preview-copy p,
 .mate-message-card p,
 .today-card p,
-.library-card p,
-.stats-copy p {
+.library-item-row p,
+.stats-copy p,
+.onboarding-card p,
+.feed-panel p {
   color: var(--muted);
   line-height: 1.7;
 }
@@ -278,6 +308,45 @@ select {
   gap: 18px;
   align-items: start;
   margin-bottom: 20px;
+}
+
+.onboarding-card {
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  background:
+    radial-gradient(circle at right top, rgba(220, 180, 95, 0.18), transparent 28%),
+    var(--panel);
+}
+
+.onboarding-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.onboarding-step {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(47, 107, 61, 0.12);
+  color: var(--forest-deep);
+  font-weight: 700;
+}
+
+.onboarding-step.done .step-dot {
+  background: linear-gradient(135deg, var(--forest), var(--forest-deep));
+  color: white;
 }
 
 .today-layout,
@@ -324,7 +393,8 @@ select {
   gap: 12px;
 }
 
-.drop-hint {
+.drop-hint,
+.library-empty {
   padding: 14px;
   border: 1px dashed rgba(47, 107, 61, 0.22);
   border-radius: 18px;
@@ -332,7 +402,6 @@ select {
 }
 
 .today-card,
-.library-card,
 .picker-item {
   padding: 16px;
   border-radius: 20px;
@@ -416,7 +485,7 @@ select {
 }
 
 .library-form {
-  grid-template-columns: 1.2fr 1fr 180px 150px auto;
+  grid-template-columns: 1.2fr 1.1fr 180px 150px auto;
   align-items: end;
   margin-bottom: 20px;
 }
@@ -433,7 +502,7 @@ select {
   padding: 14px 15px;
   border: 1px solid rgba(37, 77, 46, 0.16);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--ink);
 }
 
@@ -443,10 +512,41 @@ select:focus {
   border-color: var(--forest);
 }
 
-.category-combo {
+.pretty-field {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.option-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.option-chip-grid.large .option-chip {
+  min-width: 108px;
+}
+
+.option-chip {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(37, 77, 46, 0.1);
+  color: var(--forest-deep);
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.option-chip:hover,
+.option-chip.active {
+  transform: translateY(-1px);
+  border-color: rgba(47, 107, 61, 0.3);
+  background: linear-gradient(135deg, rgba(47, 107, 61, 0.12), rgba(157, 210, 124, 0.18));
+}
+
+.option-chip small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 4px;
 }
 
 .checkbox-label {
@@ -461,6 +561,61 @@ select:focus {
   height: 18px;
 }
 
+.library-category-group {
+  display: grid;
+  gap: 12px;
+}
+
+.library-item-row {
+  padding: 14px;
+  border-radius: 18px;
+  background: white;
+  border: 1px solid rgba(37, 77, 46, 0.1);
+}
+
+.library-row-head {
+  justify-content: space-between;
+}
+
+.library-task-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.library-row-extra {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(37, 77, 46, 0.14);
+}
+
+.library-meta {
+  margin-bottom: 12px;
+}
+
+.task-inline-btn {
+  padding: 9px 12px;
+}
+
+.plus-mark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(47, 107, 61, 0.14), rgba(157, 210, 124, 0.24));
+  color: var(--forest-deep);
+  font-size: 1.1rem;
+}
+
 .mate-preview-card,
 .mate-message-card {
   padding: 22px;
@@ -468,70 +623,107 @@ select:focus {
 
 .mate-preview-card {
   display: grid;
-  grid-template-columns: 160px 1fr;
+  grid-template-columns: 180px 1fr;
   gap: 18px;
   align-items: center;
 }
 
 .mate-avatar {
-  width: 160px;
-  height: 200px;
-  border-radius: 28px;
-  background: linear-gradient(180deg, #d3ebc2 0%, #edf7e6 100%);
+  width: 180px;
+  height: 220px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.55), transparent 34%),
+    linear-gradient(180deg, #d3ebc2 0%, #edf7e6 100%);
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(37, 77, 46, 0.12);
+  display: grid;
+  place-items: center;
 }
 
-.avatar-hair,
-.avatar-face,
-.avatar-outfit {
+.pet-core {
+  position: relative;
+  z-index: 2;
+  font-size: 5rem;
+  transition: transform 180ms ease;
+}
+
+.mate-avatar[data-stage="juvenile"] .pet-core {
+  font-size: 4.8rem;
+}
+
+.mate-avatar[data-stage="young"] .pet-core {
+  font-size: 5.4rem;
+}
+
+.mate-avatar[data-stage="adult"] .pet-core,
+.mate-avatar[data-stage="legend"] .pet-core {
+  font-size: 6rem;
+}
+
+.pet-pattern {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.avatar-hair {
-  top: 18px;
-  width: 96px;
-  height: 58px;
-  background: #3e5f34;
-  border-radius: 60px 60px 28px 28px;
-}
-
-.avatar-face {
-  top: 56px;
-  width: 82px;
-  height: 72px;
-  background: #ffe7cf;
-  border-radius: 40px 40px 34px 34px;
-}
-
-.avatar-face::before,
-.avatar-face::after {
-  content: "";
-  position: absolute;
-  top: 28px;
-  width: 8px;
-  height: 8px;
+  inset: 46px 50px 66px;
   border-radius: 999px;
-  background: #42533c;
+  background:
+    radial-gradient(circle at 30% 35%, rgba(255, 255, 255, 0.7) 0 12%, transparent 13%),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.6) 0 10%, transparent 11%),
+    radial-gradient(circle at 50% 78%, rgba(255, 255, 255, 0.65) 0 10%, transparent 11%);
+  z-index: 1;
+  opacity: 0.9;
 }
 
-.avatar-face::before {
-  left: 20px;
+.pet-species-badge,
+.pet-accessory {
+  position: absolute;
+  z-index: 3;
 }
 
-.avatar-face::after {
-  right: 20px;
+.pet-species-badge {
+  top: 14px;
+  left: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
+  color: var(--forest-deep);
+  font-size: 0.8rem;
 }
 
-.avatar-outfit {
-  bottom: -12px;
-  width: 124px;
-  height: 90px;
-  background: #7fa86b;
-  border-radius: 28px 28px 0 0;
+.pet-accessory {
+  top: 14px;
+  right: 14px;
+  font-size: 1.3rem;
+}
+
+.feed-panel {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(157, 210, 124, 0.14);
+}
+
+.feed-actions {
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.feed-btn {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--forest-deep);
+  border: 1px solid rgba(37, 77, 46, 0.1);
+}
+
+.feed-btn strong {
+  display: block;
+}
+
+.feed-btn span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 4px;
 }
 
 .modal {
@@ -546,7 +738,7 @@ select:focus {
 }
 
 .modal-card {
-  width: min(680px, 100%);
+  width: min(760px, 100%);
   max-height: 90vh;
   overflow: auto;
   padding: 24px;

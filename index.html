@@ -65,6 +65,7 @@
             <button id="quickTodayBtn" class="secondary-btn" data-i18n="today.quickAdd">快速新增</button>
           </div>
         </div>
+        <div id="onboardingCard" class="onboarding-card hidden"></div>
 
         <div class="today-layout">
           <div class="today-column">
@@ -101,10 +102,11 @@
           </label>
           <label>
             <span data-i18n="library.category">任务类别</span>
-            <div class="category-combo">
-              <select id="taskCategorySelect"></select>
+            <div class="pretty-field">
+              <div id="taskCategoryPresetGroup" class="option-chip-grid"></div>
               <input id="customCategoryInput" type="text" maxlength="30" />
             </div>
+            <select id="taskCategorySelect" class="hidden"></select>
           </label>
           <label>
             <span data-i18n="library.date">计划日期</span>
@@ -132,13 +134,15 @@
         <div class="mate-layout">
           <div class="mate-preview-card">
             <div id="mateAvatar" class="mate-avatar">
-              <div class="avatar-hair"></div>
-              <div class="avatar-face"></div>
-              <div class="avatar-outfit"></div>
+              <div id="petPattern" class="pet-pattern hidden"></div>
+              <div id="petSpeciesBadge" class="pet-species-badge"></div>
+              <div id="petCore" class="pet-core">🥚</div>
+              <div id="petAccessory" class="pet-accessory hidden">✨</div>
             </div>
             <div class="mate-preview-copy">
               <p class="eyebrow" data-i18n="mate.preview">Your Mate</p>
               <h3 id="mateName">Taskmate</h3>
+              <p id="mateStage"></p>
               <p id="mateSummary"></p>
             </div>
           </div>
@@ -146,6 +150,7 @@
           <div class="mate-message-card">
             <h3 data-i18n="mate.dailyPromptTitle">今日搭子提醒</h3>
             <p id="dailyMatePrompt"></p>
+            <div id="feedPanel" class="feed-panel"></div>
           </div>
         </div>
       </section>
@@ -184,12 +189,19 @@
       <h3 data-i18n="mate.settingsTitle">设定你的 AI 学习搭子</h3>
       <form id="mateForm" class="modal-form">
         <label>
+          <span data-i18n="mate.species">蛋的动物原型</span>
+          <div id="mateSpeciesGroup" class="option-chip-grid large"></div>
+          <select id="mateSpecies" class="hidden"></select>
+        </label>
+        <label>
           <span data-i18n="mate.gender">AI 性别</span>
-          <select id="mateGender"></select>
+          <div id="mateGenderGroup" class="option-chip-grid"></div>
+          <select id="mateGender" class="hidden"></select>
         </label>
         <label>
           <span data-i18n="mate.personality">AI 性格</span>
-          <select id="matePersonality"></select>
+          <div id="matePersonalityGroup" class="option-chip-grid"></div>
+          <select id="matePersonality" class="hidden"></select>
         </label>
         <label>
           <span data-i18n="mate.nick">AI 昵称</span>
@@ -202,15 +214,18 @@
         <div class="form-grid">
           <label>
             <span data-i18n="mate.hair">发型</span>
-            <select id="mateHair"></select>
+            <div id="mateHairGroup" class="option-chip-grid"></div>
+            <select id="mateHair" class="hidden"></select>
           </label>
           <label>
             <span data-i18n="mate.face">面部</span>
-            <select id="mateFace"></select>
+            <div id="mateFaceGroup" class="option-chip-grid"></div>
+            <select id="mateFace" class="hidden"></select>
           </label>
           <label>
             <span data-i18n="mate.outfit">服装</span>
-            <select id="mateOutfit"></select>
+            <div id="mateOutfitGroup" class="option-chip-grid"></div>
+            <select id="mateOutfit" class="hidden"></select>
           </label>
         </div>
         <div class="section-actions">

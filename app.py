@@ -150,6 +150,13 @@ class AppHandler(BaseHTTPRequestHandler):
             return self.handle_update_task(task_id)
         return self.send_json({"error": "Not found"}, 404)
 
+    def do_DELETE(self):
+        parsed = urlparse(self.path)
+        if parsed.path.startswith("/api/tasks/"):
+            task_id = parsed.path.split("/")[-1]
+            return self.handle_delete_task(task_id)
+        return self.send_json({"error": "Not found"}, 404)
+
     def serve_file(self, name, content_type):
         content = (ROOT / name).read_bytes()
         self.send_response(200)
@@ -451,6 +458,16 @@ class AppHandler(BaseHTTPRequestHandler):
                 now_iso(),
             ),
         )
+        conn.commit()
+        conn.close()
+        return self.send_json({"ok": True})
+
+    def handle_delete_task(self, task_id):
+        user = self.require_user()
+        if not user:
+            return
+        conn = db()
+        conn.execute("DELETE FROM tasks WHERE id = ? AND user_id = ?", (task_id, user["id"]))
         conn.commit()
         conn.close()
         return self.send_json({"ok": True})
